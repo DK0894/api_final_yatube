@@ -70,7 +70,9 @@ GET запрос к /api/v1/posts/ :
 }
 
 ```
-```POST запрос к /api/v1/posts/ :
+
+```
+POST запрос к /api/v1/posts/ :
 
 {
   "text": "string",
