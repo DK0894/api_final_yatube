@@ -1,8 +1,5 @@
-from http import HTTPStatus
-
-from rest_framework import serializers,validators
+from rest_framework import serializers, validators
 from rest_framework.relations import SlugRelatedField
-
 
 from posts.models import Comment, Follow, Group, Post, User
 
@@ -32,7 +29,10 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(read_only=True, slug_field='username')
+    user = serializers.SlugRelatedField(
+        read_only=True, slug_field='username', required=False,
+        default=serializers.CurrentUserDefault()
+    )
     following = serializers.SlugRelatedField(
         slug_field='username', queryset=User.objects.all())
 
@@ -47,8 +47,7 @@ class FollowSerializer(serializers.ModelSerializer):
             )
         ]
 
-    def validated_following(self, value):
-        user = self.context['request'].user
-        if user == value:
+    def validate(self, data):
+        if self.context['request'].user == data['following']:
             raise serializers.ValidationError("Нельзя подписаться на себя")
-        return value
+        return data
